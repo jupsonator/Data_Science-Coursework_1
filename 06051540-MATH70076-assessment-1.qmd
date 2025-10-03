@@ -1,0 +1,17 @@
+---
+title: "06051540-MATH70076-assessment-1"
+subtitle: 'MSc in Statistics 2025/26, Imperial College London'
+author: "Justin Upson"
+format:
+  html:
+    toc: true
+    highlight: tango
+    self-contained: true
+    df-print: paged
+  pdf: default
+format-links: false
+bibliography: ref.bib 
+---
+
+# Question 1
+---
