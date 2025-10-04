@@ -64,17 +64,27 @@ But given our inputs of $F_X^{-1}(x)$ vary between 0 and 1, we can write that:
 F_X^{-1}(x)=u-\sigma ln(x)
 \end{equation}
 
-# Question 2
+# Question 2a
 
 Defining the quantile function, and using the basis of the cdf from question 1, we get that:
 ```{r}
-qgpd <- function (p, sigma, xi, u){
+qgpd <- function (p, sigma=1, xi=0, u=0){
   if (xi != 0){
-    return(u + (p^(-xi)-1) * sigma / xi)
+    return(u + ((1-p)^(-xi)-1) * sigma / xi)
   } else {
     return(u - sigma * log(p))
   }
 }
 ```
 
+# Question 2b
+
+```{r}
+qgpd(0.5,2,-0.4,1.5)
+qgpd(0.75,2,-0.4,1.5)
+qgpd(0.99,2,-0.4,1.5)
+```
+
+
 ---
+
