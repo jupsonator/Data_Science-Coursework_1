@@ -2346,16 +2346,27 @@ window.Quarto = {
 
 <section id="question-1" class="level1">
 <h1>Question 1</h1>
-<p>For <span class="math inline">\(\xi \neq 0\)</span>, we know from the cumulative distribution function that: <span class="math display">\[\begin{equation}
+<p><strong>For <span class="math inline">\(\xi \neq 0\)</span>:</strong></p>
+<p>We know from the cumulative distribution function that: <span class="math display">\[\begin{equation}
   F(x;\sigma,\xi,u) = 1-\left(1+\frac{\xi(x-u)}{\sigma}\right)_+^{-1/\xi}
-\end{equation}\]</span> Rewriting to make x the subject: <span class="math display">\[\begin{align}
+\end{equation}\]</span> Rewriting to make <span class="math inline">\(x\)</span> the subject: <span class="math display">\[\begin{align}
 \left(1+\frac{\xi(x-u)}{\sigma}\right)_+^{-1/\xi}&amp;=(1-F) \\
 1&amp;=(1-F)\left(1+\frac{\xi(x-u)}{\sigma}\right)_+^{1/\xi} \\
 (1-F)^{-1}&amp;=\left(1+\frac{\xi(x-u)}{\sigma}\right)_+^{1/\xi} \\
-\end{align}\]</span> For <span class="math inline">\(\left(1+\frac{\xi(x-u)}{\sigma}\right)^{1/\xi}&gt;0\)</span>, we then get: <span class="math display">\[\begin{align}
+\end{align}\]</span> For <span class="math inline">\(\xi &gt; 0\)</span>, we see that <span class="math inline">\(\left(1+\frac{\xi(x-u)}{\sigma}\right)^{1/\xi}&gt;0\)</span> so we get: <span class="math display">\[\begin{align}
 (1-F)^{-\xi}&amp;=1+\frac{\xi(x-u)}{\sigma} \\
-u+\left(\left(1-F\right)^{-xi}-1\right)\times \frac{\sigma}{\xi} &amp;= x\\
-\end{align}\]</span> So <span class="math inline">\(F_X^{-1}=u+\left(\left(1-F\right)^{-xi}-1\right)\times \frac{\sigma}{\xi}\)</span></p>
+(1-F)^{-\xi}-1&amp;=\frac{\xi(x-u)}{\sigma} \\
+\left(\left(1-F\right)^{-\xi}-1\right)\times \frac{\sigma}{\xi} &amp;= x-u\\
+u+\left(\left(1-F\right)^{-\xi}-1\right)\times \frac{\sigma}{\xi} &amp;= x\\
+\end{align}\]</span> So <span class="math inline">\(F_X^{-1}=u+\left(\left(1-x\right)^{-\xi}-1\right)\times \frac{\sigma}{\xi}\)</span></p>
+<p>For <span class="math inline">\(\xi &lt; 0\)</span>, we know that we have quickly decaying tails with finite upper endpoint. This finite endpoint is met for <span class="math inline">\(\xi \neq 0\)</span> when <span class="math inline">\(\left(1+\frac{\xi(x-u)}{\sigma}\right)^{1/\xi}&lt;=0\)</span>, in which case, the CDF is no longer increasing, so we don’t need to invert this function.</p>
+<p><strong>For <span class="math inline">\(\xi = 0\)</span>:</strong> <span class="math display">\[\begin{align}
+F&amp;=1-exp\left(-\frac{x-u}{\sigma}\right) \\
+exp\left(-\frac{x-u}{\sigma}\right)&amp;=1-F \\
+-\frac{x-u}{\sigma}&amp;=ln(1-F) \\
+-x+u&amp;=\sigma ln(1-F) \\
+u+\sigma ln(1-F) &amp;= x \\
+\end{align}\]</span> So <span class="math inline">\(F_X^{-1}=u+\sigma ln(1-x)\)</span></p>
 <hr>
 </section>
 

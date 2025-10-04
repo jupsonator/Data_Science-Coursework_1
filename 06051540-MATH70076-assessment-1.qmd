@@ -15,21 +15,37 @@ bibliography: ref.bib
 
 # Question 1
 
-For $\xi \neq 0$, we know from the cumulative distribution function that:
+**For $\xi \neq 0$:** 
+
+We know from the cumulative distribution function that:
 \begin{equation}
   F(x;\sigma,\xi,u) = 1-\left(1+\frac{\xi(x-u)}{\sigma}\right)_+^{-1/\xi}
 \end{equation}
-Rewriting to make x the subject:
+Rewriting to make $x$ the subject:
 \begin{align}
 \left(1+\frac{\xi(x-u)}{\sigma}\right)_+^{-1/\xi}&=(1-F) \\
 1&=(1-F)\left(1+\frac{\xi(x-u)}{\sigma}\right)_+^{1/\xi} \\
 (1-F)^{-1}&=\left(1+\frac{\xi(x-u)}{\sigma}\right)_+^{1/\xi} \\
 \end{align}
-For $\left(1+\frac{\xi(x-u)}{\sigma}\right)^{1/\xi}>0$, we then get:
+For $\xi > 0$, we see that $\left(1+\frac{\xi(x-u)}{\sigma}\right)^{1/\xi}>0$ so we get:
 \begin{align}
 (1-F)^{-\xi}&=1+\frac{\xi(x-u)}{\sigma} \\
-u+\left(\left(1-F\right)^{-xi}-1\right)\times \frac{\sigma}{\xi} &= x\\
+(1-F)^{-\xi}-1&=\frac{\xi(x-u)}{\sigma} \\
+\left(\left(1-F\right)^{-\xi}-1\right)\times \frac{\sigma}{\xi} &= x-u\\
+u+\left(\left(1-F\right)^{-\xi}-1\right)\times \frac{\sigma}{\xi} &= x\\
 \end{align}
-So $F_X^{-1}=u+\left(\left(1-F\right)^{-xi}-1\right)\times \frac{\sigma}{\xi}$
+So $F_X^{-1}=u+\left(\left(1-x\right)^{-\xi}-1\right)\times \frac{\sigma}{\xi}$
+
+For $\xi < 0$, we know that we have quickly decaying tails with finite upper endpoint. This finite endpoint is met for $\xi \neq 0$ when $\left(1+\frac{\xi(x-u)}{\sigma}\right)^{1/\xi}<=0$, in which case, the CDF is no longer increasing, so we don't need to invert this function.
+
+**For $\xi = 0$:**
+\begin{align}
+F&=1-exp\left(-\frac{x-u}{\sigma}\right) \\
+exp\left(-\frac{x-u}{\sigma}\right)&=1-F \\
+-\frac{x-u}{\sigma}&=ln(1-F) \\
+-x+u&=\sigma ln(1-F) \\
+u+\sigma ln(1-F) &= x \\
+\end{align}
+So $F_X^{-1}=u+\sigma ln(1-x)$
 
 ---
