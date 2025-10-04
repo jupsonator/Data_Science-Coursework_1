@@ -49,7 +49,6 @@ x&=u-\frac{\sigma}{\xi} \\
 \end{align}
 So for $x > u-\frac{\sigma}{\xi}$, produced by the inverse function above we discard the values of $x$.
 
-
 **For $\xi = 0$:**
 \begin{align}
 F&=1-exp\left(-\frac{x-u}{\sigma}\right) \\
@@ -64,4 +63,18 @@ But given our inputs of $F_X^{-1}(x)$ vary between 0 and 1, we can write that:
 \begin{equation}
 F_X^{-1}(x)=u-\sigma ln(x)
 \end{equation}
+
+# Question 2
+
+Defining the quantile function, and using the basis of the cdf from question 1, we get that:
+```{r}
+qgpd <- function (p, sigma, xi, u){
+  if (xi != 0){
+    return(u + (p^(-xi)-1) * sigma / xi)
+  } else {
+    return(u - sigma * log(p))
+  }
+}
+```
+
 ---
