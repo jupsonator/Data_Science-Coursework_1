@@ -27,7 +27,7 @@ Rewriting to make $x$ the subject:
 1&=(1-F)\left(1+\frac{\xi(x-u)}{\sigma}\right)_+^{1/\xi} \\
 (1-F)^{-1}&=\left(1+\frac{\xi(x-u)}{\sigma}\right)_+^{1/\xi} \\
 \end{align}
-For $\xi > 0$, we see that $\left(1+\frac{\xi(x-u)}{\sigma}\right)^{1/\xi}>0$ so we get:
+For $\xi > 0$, we see that $\left(1+\frac{\xi(x-u)}{\sigma}\right)^{1/\xi}>0$, so we get:
 \begin{align}
 (1-F)^{-\xi}&=1+\frac{\xi(x-u)}{\sigma} \\
 (1-F)^{-\xi}-1&=\frac{\xi(x-u)}{\sigma} \\
@@ -35,8 +35,20 @@ For $\xi > 0$, we see that $\left(1+\frac{\xi(x-u)}{\sigma}\right)^{1/\xi}>0$ so
 u+\left(\left(1-F\right)^{-\xi}-1\right)\times \frac{\sigma}{\xi} &= x\\
 \end{align}
 So $F_X^{-1}=u+\left(\left(1-x\right)^{-\xi}-1\right)\times \frac{\sigma}{\xi}$
+But given our inputs of $F_X^{-1}(x)$ vary between 0 and 1, we can write that:
+\begin{equation}
+F_X^{-1}(x)=u+\left(\left(x\right)^{-\xi}-1\right)\times \frac{\sigma}{\xi}
+\end{equation}
 
-For $\xi < 0$, we know that we have quickly decaying tails with finite upper endpoint. This finite endpoint is met for $\xi \neq 0$ when $\left(1+\frac{\xi(x-u)}{\sigma}\right)^{1/\xi}<=0$, in which case, the CDF is no longer increasing, so we don't need to invert this function.
+For $\xi < 0$, we know that we have quickly decaying tails with finite upper endpoint. With $x>u$, this finite endpoint is met when
+\begin{align}
+1+\frac{\xi(x-u)}{\sigma}&=0 \\
+\frac{\xi(x-u)}{\sigma}&=-1 \\
+x-u&=-\frac{\sigma}{\xi} \\
+x&=u-\frac{\sigma}{\xi} \\
+\end{align}
+So for $x > u-\frac{\sigma}{\xi}$, produced by the inverse function above we discard the values of $x$.
+
 
 **For $\xi = 0$:**
 \begin{align}
@@ -44,8 +56,12 @@ F&=1-exp\left(-\frac{x-u}{\sigma}\right) \\
 exp\left(-\frac{x-u}{\sigma}\right)&=1-F \\
 -\frac{x-u}{\sigma}&=ln(1-F) \\
 -x+u&=\sigma ln(1-F) \\
-u+\sigma ln(1-F) &= x \\
+u-\sigma ln(1-F) &= x \\
 \end{align}
-So $F_X^{-1}=u+\sigma ln(1-x)$
+So $F_X^{-1}=u-\sigma ln(1-x)$
 
+But given our inputs of $F_X^{-1}(x)$ vary between 0 and 1, we can write that:
+\begin{equation}
+F_X^{-1}(x)=u-\sigma ln(x)
+\end{equation}
 ---
