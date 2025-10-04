@@ -14,4 +14,22 @@ bibliography: ref.bib
 ---
 
 # Question 1
+
+For $\xi \neq 0$, we know from the cumulative distribution function that:
+\begin{equation}
+  F(x;\sigma,\xi,u) = 1-\left(1+\frac{\xi(x-u)}{\sigma}\right)_+^{-1/\xi}
+\end{equation}
+Rewriting to make x the subject:
+\begin{align}
+\left(1+\frac{\xi(x-u)}{\sigma}\right)_+^{-1/\xi}&=(1-F) \\
+1&=(1-F)\left(1+\frac{\xi(x-u)}{\sigma}\right)_+^{1/\xi} \\
+(1-F)^{-1}&=\left(1+\frac{\xi(x-u)}{\sigma}\right)_+^{1/\xi} \\
+\end{align}
+For $\left(1+\frac{\xi(x-u)}{\sigma}\right)^{1/\xi}>0$, we then get:
+\begin{align}
+(1-F)^{-\xi}&=1+\frac{\xi(x-u)}{\sigma} \\
+u+\left(\left(1-F\right)^{-xi}-1\right)\times \frac{\sigma}{\xi} &= x\\
+\end{align}
+So $F_X^{-1}=u+\left(\left(1-F\right)^{-xi}-1\right)\times \frac{\sigma}{\xi}$
+
 ---
