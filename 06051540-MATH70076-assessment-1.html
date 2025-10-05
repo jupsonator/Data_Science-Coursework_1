@@ -3623,6 +3623,7 @@ window.Quarto = {
   <li><a href="#question-1" id="toc-question-1" class="nav-link active" data-scroll-target="#question-1">Question 1</a></li>
   <li><a href="#question-2a" id="toc-question-2a" class="nav-link" data-scroll-target="#question-2a">Question 2a</a></li>
   <li><a href="#question-2b" id="toc-question-2b" class="nav-link" data-scroll-target="#question-2b">Question 2b</a></li>
+  <li><a href="#question-3" id="toc-question-3" class="nav-link" data-scroll-target="#question-3">Question 3</a></li>
   </ul>
 </nav>
 </div>
@@ -3693,17 +3694,22 @@ F_X^{-1}(x)=u-\sigma ln(x)
 <p>Defining the quantile function, and using the basis of the cdf from question 1, we get that:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>qgpd <span class="ot">&lt;-</span> <span class="cf">function</span> (p, <span class="at">sigma=</span><span class="dv">1</span>, <span class="at">xi=</span><span class="dv">0</span>, <span class="at">u=</span><span class="dv">0</span>){</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (xi <span class="sc">!=</span> <span class="dv">0</span>){</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(u <span class="sc">+</span> ((<span class="dv">1</span><span class="sc">-</span>p)<span class="sc">^</span>(<span class="sc">-</span>xi)<span class="sc">-</span><span class="dv">1</span>) <span class="sc">*</span> sigma <span class="sc">/</span> xi)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(u <span class="sc">-</span> sigma <span class="sc">*</span> <span class="fu">log</span>(<span class="dv">1</span><span class="sc">-</span>p))</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (p<span class="sc">&lt;</span><span class="dv">0</span><span class="sc">||</span>p<span class="sc">&gt;</span><span class="dv">1</span>){</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">warning</span>(<span class="st">&quot;NaNs produced - p must be between 0 and 1&quot;</span>)) </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span> <span class="cf">if</span> (sigma<span class="sc">&lt;=</span><span class="dv">0</span>){</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">warning</span>(<span class="st">&quot;NaNs produced - sigma must be greater than 0&quot;</span>)) </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span> <span class="cf">if</span> (xi <span class="sc">!=</span> <span class="dv">0</span>){</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(u <span class="sc">+</span> ((<span class="dv">1</span><span class="sc">-</span>p)<span class="sc">^</span>(<span class="sc">-</span>xi)<span class="sc">-</span><span class="dv">1</span>) <span class="sc">*</span> sigma <span class="sc">/</span> xi)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(u <span class="sc">-</span> sigma <span class="sc">*</span> <span class="fu">log</span>(<span class="dv">1</span><span class="sc">-</span>p))</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>By default, the expected inputs for the function are sigma=1, xi=0, u=0.</p>
+<p>By default, the expected inputs for the function are sigma=1, xi=0, u=0. The code also prevents inputs where p values are less than 0, where p values exceed 1, or where sigma is less than or equal to 0.</p>
 <p>The expected output is a real number greater than u that is unbounded if xi is greater than or equal to 0. The expected output is less than u - sigma/xi if xi is less than 0.</p>
-<p>The behaviours of the quantile function varies depending on the parameters: We do not have any values less than u.</p>
-<p><strong>TO FILL IN</strong> <strong>ADD IN EDGE CASES (THE LIMIT WHEN XI &lt; 0)</strong></p>
+<p>Regarding the behaviours of the quantile function: The larger the value of xi, the slower the tail decays. In this for xi <span class="math inline">\(&gt;=\)</span> 0 the functions output approaches infinity as p -&gt; 1. For xi &lt; 0, the functions output has a maximum at u - sigma/xi (when p -&gt; 1). For larger values of sigma, the slower the tail decays.</p>
 </section>
 <section id="question-2b" class="level1">
 <h1>Question 2b</h1>
@@ -3719,6 +3725,18 @@ F_X^{-1}(x)=u-\sigma ln(x)
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qgpd</span>(<span class="fl">0.99</span>,<span class="dv">2</span>,<span class="sc">-</span><span class="fl">0.4</span>,<span class="fl">1.5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 5.707553</code></pre>
+</div>
+</div>
+</section>
+<section id="question-3" class="level1">
+<h1>Question 3</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["date"],"name":[1],"type":["chr"],"align":["left"]},{"label":["flow"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["is_extreme"],"name":[3],"type":["chr"],"align":["left"]},{"label":["baseline_mean"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"2015-01-01","2":"34.95310","3":"False","4":"31.60059","_rn_":"1"},{"1":"2015-01-02","2":"31.50755","3":"False","4":"31.48878","_rn_":"2"},{"1":"2015-01-03","2":"37.10926","3":"False","4":"31.38355","_rn_":"3"},{"1":"2015-01-04","2":"45.38324","3":"False","4":"31.28467","_rn_":"4"},{"1":"2015-01-05","2":"29.90454","3":"False","4":"31.19187","_rn_":"5"},{"1":"2015-01-06","2":"29.84235","3":"False","4":"31.10492","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 </div>
 </div>
 <hr>

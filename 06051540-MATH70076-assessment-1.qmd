@@ -69,7 +69,13 @@ F_X^{-1}(x)=u-\sigma ln(x)
 Defining the quantile function, and using the basis of the cdf from question 1, we get that:
 ```{r}
 qgpd <- function (p, sigma=1, xi=0, u=0){
-  if (xi != 0){
+  if (p<0||p>1){
+    return(warning("NaNs produced - p must be between 0 and 1")) 
+  }
+  else if (sigma<=0){
+    return(warning("NaNs produced - sigma must be greater than 0")) 
+  }
+  else if (xi != 0){
     return(u + ((1-p)^(-xi)-1) * sigma / xi)
   } else {
     return(u - sigma * log(1-p))
@@ -77,16 +83,15 @@ qgpd <- function (p, sigma=1, xi=0, u=0){
 }
 ```
 
-By default, the expected inputs for the function are sigma=1, xi=0, u=0. 
+By default, the expected inputs for the function are sigma=1, xi=0, u=0. The code also prevents inputs where p values are less than 0, where p values exceed 1, or where sigma is less than or equal to 0.
 
 The expected output is a real number greater than u that is unbounded if xi is greater than or equal to 0. The expected output is less than u - sigma/xi if xi is less than 0.
 
-The behaviours of the quantile function varies depending on the parameters:
-We do not have any values less than u.
+Regarding the behaviours of the quantile function:
+The larger the value of xi, the slower the tail decays. In this for xi $>=$ 0 the functions output approaches infinity as p -> 1.
+For xi < 0, the functions output has a maximum at u - sigma/xi (when p -> 1).
+For larger values of sigma, the slower the tail decays.
 
-
-**TO FILL IN**
-**ADD IN EDGE CASES (THE LIMIT WHEN XI < 0)**
 
 # Question 2b
 
@@ -95,6 +100,20 @@ qgpd(0.5,2,-0.4,1.5)
 qgpd(0.75,2,-0.4,1.5)
 qgpd(0.99,2,-0.4,1.5)
 ```
+
+
+# Question 3
+
+```{r}
+#| echo: false
+riverflow <- read.csv("riverflow_2015_2024.csv")
+head(riverflow)
+
+```
+
+
+
+
 
 ---
 
