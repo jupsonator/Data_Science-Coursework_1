@@ -72,10 +72,21 @@ qgpd <- function (p, sigma=1, xi=0, u=0){
   if (xi != 0){
     return(u + ((1-p)^(-xi)-1) * sigma / xi)
   } else {
-    return(u - sigma * log(p))
+    return(u - sigma * log(1-p))
   }
 }
 ```
+
+By default, the expected inputs for the function are sigma=1, xi=0, u=0. 
+
+The expected output is a real number greater than u that is unbounded if xi is greater than or equal to 0. The expected output is less than u - sigma/xi if xi is less than 0.
+
+The behaviours of the quantile function varies depending on the parameters:
+We do not have any values less than u.
+
+
+**TO FILL IN**
+**ADD IN EDGE CASES (THE LIMIT WHEN XI < 0)**
 
 # Question 2b
 
@@ -84,7 +95,6 @@ qgpd(0.5,2,-0.4,1.5)
 qgpd(0.75,2,-0.4,1.5)
 qgpd(0.99,2,-0.4,1.5)
 ```
-
 
 ---
 

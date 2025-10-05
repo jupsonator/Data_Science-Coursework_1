@@ -3696,10 +3696,14 @@ F_X^{-1}(x)=u-\sigma ln(x)
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (xi <span class="sc">!=</span> <span class="dv">0</span>){</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(u <span class="sc">+</span> ((<span class="dv">1</span><span class="sc">-</span>p)<span class="sc">^</span>(<span class="sc">-</span>xi)<span class="sc">-</span><span class="dv">1</span>) <span class="sc">*</span> sigma <span class="sc">/</span> xi)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(u <span class="sc">-</span> sigma <span class="sc">*</span> <span class="fu">log</span>(p))</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(u <span class="sc">-</span> sigma <span class="sc">*</span> <span class="fu">log</span>(<span class="dv">1</span><span class="sc">-</span>p))</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p>By default, the expected inputs for the function are sigma=1, xi=0, u=0.</p>
+<p>The expected output is a real number greater than u that is unbounded if xi is greater than or equal to 0. The expected output is less than u - sigma/xi if xi is less than 0.</p>
+<p>The behaviours of the quantile function varies depending on the parameters: We do not have any values less than u.</p>
+<p><strong>TO FILL IN</strong> <strong>ADD IN EDGE CASES (THE LIMIT WHEN XI &lt; 0)</strong></p>
 </section>
 <section id="question-2b" class="level1">
 <h1>Question 2b</h1>
