@@ -104,7 +104,7 @@ qgpd(0.99,2,-0.4,1.5)
 
 # Question 3
 
-Graphing our actual vs expected, we see below: 
+Graphing our actual vs expected split by id, we see that: 
 ```{r}
 #| echo: false
 
@@ -131,23 +131,81 @@ qgpd_vec <- function(p, sigma=1, xi=0, u=0){
   )
 }
 
+# Formatting (necessary for the legend):
+f   <- factor(gpd_samples$set_id)
+cols <- as.integer(f)
+ptch <- 16
+pt.cex <- 0.6
 
+expected_q <- qgpd_vec(
+  p, 
+  gpd_parameters$sigma[row], 
+  gpd_parameters$xi[row],
+  gpd_parameters$u[row]
+)
 
 # Graphing our actual vs expected (using our p-values to generate our expected):
 plot(
 x = gpd_samples$value, 
-y = qgpd_vec(
-  p, 
-  gpd_parameters$sigma[row], 
-  gpd_parameters$xi[row],
-  gpd_parameters$u[row]),
+y = expected_q,
 xlab = "Actuals",
 ylab = "Expected",
-col = as.factor(gpd_samples$set_id)      
+col = cols,
+pch = ptch,
+cex = pt.cex
 )
+
+# Adding our y=x line:
 abline(0,1,col="red")
 
+# Adding our legend:
+legend(
+  "bottomright",
+  title = "id",
+  legend = levels(f),
+  col = 1:6, #seq_along(levels(f)),
+  pch = ptch,
+  cex = pt.cex,
+  bty = "o")
+
 ```
+From the figure above, we see some interesting results -- although most actuals seem in line with the expecteds (being close to the figures red line), this is not always the case. Ultimately, however, the different ids need to be separated so as to provide a more granular analysis of the distributions:
+
+```{r}
+#| echo: false
+
+# Making six QQ plots (with one per id):
+ids <- levels(f)
+limits <- range(c(gpd_samples$value, expected_q), finite = TRUE)
+
+# Setting up the grid for our 6 smaller QQ plots:
+op <- par(mfrow = c(2, 3))
+
+# Building our plots:
+for(id in ids){
+  ii <- gpd_samples$set_id == id
+  plot(
+    x = gpd_samples$value[ii],
+    y = expected_q[ii],
+    xlab = "Actuals",
+    ylab = "Expected",
+    main = paste("id:", id),
+    pch  = ptch,
+    cex  = pt.cex,
+    xlim = limits,
+    ylim = limits,
+    asp  = 1
+  )
+  abline(0, 1, col = "red")
+}
+
+# Reverting from grids back to normal:
+par(op)
+
+```
+From these smaller figures, we can much more readily see which of the actual distributions align with the expected distributions. We can therefore see that:
+
+
 
 
 ---
