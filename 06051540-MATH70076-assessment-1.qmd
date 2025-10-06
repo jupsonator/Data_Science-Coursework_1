@@ -211,7 +211,6 @@ From these smaller figures, we can much more readily see which of the actual dis
 
 # Question 4
 
-Determining whether the distribution of river flows is constant over time:
 ```{r}
 #| echo: false
 
@@ -228,19 +227,54 @@ y = riverflow$flow,
 type = "l",
 col = "blue",
 xlim = range(riverflow$date, na.rm = TRUE),
-ylim = range(riverflow$flow, na.rm = TRUE)
+ylim = range(riverflow$flow, na.rm = TRUE),
+xlab = "Year",
+ylab = "River Flow (cumecs)",
+main = "River Flow Time Series (2015–2024)"
 )
+
+# Time Series of baseline mean:
+lines(
+x = riverflow$date,
+y = riverflow$baseline_mean,
+col = "red",
+lty = c(1, 2)
+)
+
+# Legend:
+legend(
+"topright",
+legend = c("Flow", "Baseline mean"),
+col = c("blue", "red"), 
+bty = "o")
+
+
+
+plot(
+x = riverflow$date,
+y = riverflow$flow - riverflow$baseline_mean,
+type = "l",
+xlab = "Date", 
+ylab = "Flow − baseline (cumecs)",
+main = "Anomaly (deviation from baseline)"
+)
+abline(h = 0, lty = 3)
+
+
 ```
 
+Determining whether the distribution of river flows is constant over time, we can see from the above that an assumption of constant flow is flawed. This is because 
 
 
 
-Determining whether for river flows exceeding 75 cumecs, if it is appropriate to model the data as independent identically distributed GPD($\sigma = 29.7, \xi = 0.62, u=0$):
+
 
 ```{r}
 #| echo: false
 
 ```
+
+Determining whether for river flows exceeding 75 cumecs, if it is appropriate to model the data as independent identically distributed GPD($\sigma = 29.7, \xi = 0.62, u=0$):
 
 ---
 
