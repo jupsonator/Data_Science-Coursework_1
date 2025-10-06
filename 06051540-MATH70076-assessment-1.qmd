@@ -126,8 +126,8 @@ p <- (class_ranking - 0.5) / n
 qgpd_vec <- function(p, sigma=1, xi=0, u=0){
   ifelse(
     xi == 0,
-    u - sigma * log(1 - p), #CHECK THIS FORMULA
-    u + ((1 - p)^(-xi) - 1) * sigma / xi #CHECK THIS FORMULA
+    u - sigma * log(1 - p), 
+    u + ((1 - p)^(-xi) - 1) * sigma / xi 
   )
 }
 
@@ -163,7 +163,7 @@ legend(
   "bottomright",
   title = "id",
   legend = levels(f),
-  col = 1:6, #seq_along(levels(f)),
+  col = 1:6,
   pch = ptch,
   cex = pt.cex,
   bty = "o")
@@ -207,6 +207,40 @@ From these smaller figures, we can much more readily see which of the actual dis
 
 
 
+
+
+# Question 4
+
+Determining whether the distribution of river flows is constant over time:
+```{r}
+#| echo: false
+
+# Reading our inputs:
+riverflow <- read.csv("riverflow_2015_2024.csv")
+
+# Formating dates:
+riverflow$date <- as.Date(riverflow$date, format = "%Y-%m-%d")
+
+# Time Series of flow data:
+plot(
+x = riverflow$date,
+y = riverflow$flow,
+type = "l",
+col = "blue",
+xlim = range(riverflow$date, na.rm = TRUE),
+ylim = range(riverflow$flow, na.rm = TRUE)
+)
+```
+
+
+
+
+Determining whether for river flows exceeding 75 cumecs, if it is appropriate to model the data as independent identically distributed GPD($\sigma = 29.7, \xi = 0.62, u=0$):
+
+```{r}
+#| echo: false
+
+```
 
 ---
 
