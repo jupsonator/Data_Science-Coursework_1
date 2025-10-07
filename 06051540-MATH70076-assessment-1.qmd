@@ -238,8 +238,9 @@ lines(
 x = riverflow$date,
 y = riverflow$baseline_mean,
 col = "red",
-lty = c(1, 2)
-)
+lty = c(1, 2),
+lwd = c(1, 2),
+bty = "o")
 
 # Legend:
 legend(
@@ -249,14 +250,14 @@ col = c("blue", "red"),
 bty = "o")
 
 
-
+# Time series plot of flow minus baseline mean. 
 plot(
 x = riverflow$date,
 y = riverflow$flow - riverflow$baseline_mean,
 type = "l",
 xlab = "Date", 
 ylab = "Flow − baseline (cumecs)",
-main = "Anomaly (deviation from baseline)"
+main = "Deviation from baseline"
 )
 abline(h = 0, lty = 3)
 
@@ -266,7 +267,25 @@ abline(h = 0, lty = 3)
 Determining whether the distribution of river flows is constant over time, we can see from the above that an assumption of constant flow is flawed. This is because 
 
 
+```{r echo=FALSE}
 
+# Adding another column:
+riverflow$month <- factor(format(riverflow$date, "%b"), levels = month.abb)
+
+# Box and Whisker plot:
+boxplot(
+flow ~ month,
+data = riverflow,
+ylab = "River Flow (cumecs)",
+xlab = "Month",
+main = "Monthly distribution of flow",
+notch = TRUE,
+outline = FALSE)
+abline(h = mean(riverflow$flow), col = "red", lwd = 2, lty = 2)
+legend("topright", legend = "Overall mean", col = "red", lwd = 2, lty = 2, bty = "n")
+```
+
+By using a box and whisker plot which considers each month, we can see how seasonal changes effect river flow. From this, we see that:
 
 
 ```{r}
