@@ -125,7 +125,7 @@ p <- (class_ranking - 0.5) / n
 # To enable vectors as inputs:
 qgpd_vec <- function(p, sigma=1, xi=0, u=0){
   ifelse(
-    xi == 0,
+    rep_len(xi, length(p)) == 0,
     u - sigma * log(1 - p), 
     u + ((1 - p)^(-xi) - 1) * sigma / xi 
   )
@@ -239,8 +239,7 @@ x = riverflow$date,
 y = riverflow$baseline_mean,
 col = "red",
 lty = c(1, 2),
-lwd = c(1, 2),
-bty = "o")
+lwd = c(1, 2))
 
 # Legend:
 legend(
@@ -264,7 +263,7 @@ abline(h = 0, lty = 3)
 
 ```
 
-Determining whether the distribution of river flows is constant over time, we can see from the above that an assumption of constant flow is flawed. This is because 
+Determining whether the distribution of river flows is constant over time, we can see from the above that an assumption of constant flow is flawed. This is because we see that the speed of the river's flow varies tremendously - at numerous (albeit brief) intervals over the ten year period, the speed of the river is many multiples of the mean river speed. This is something we can demonstrably see when comparing the mean red dashed line with the time series plot above.
 
 
 ```{r echo=FALSE}
@@ -285,11 +284,27 @@ abline(h = mean(riverflow$flow), col = "red", lwd = 2, lty = 2)
 legend("topright", legend = "Overall mean", col = "red", lwd = 2, lty = 2, bty = "n")
 ```
 
-By using a box and whisker plot which considers each month, we can see how seasonal changes effect river flow. From this, we see that:
+By using a box and whisker plot which considers each month, we can see how seasonal changes cause profound effects in the speed of the river's flow. The month of May, for example has an interquartile range in river flow speeds that exceed the entire interquartile range in river flow speeds from the month of March.
+
 
 
 ```{r}
 #| echo: false
+
+# Set up, so that we can use the formula from question 2:
+over75 <- riverflow$flow[riverflow$flow > 75]
+p <- rank(over75-0.5)/length(over75)
+
+length(p)
+length(over75)
+# Quantile Quantile Plot comparing the actual versus expected data:
+plot(
+x = sort(over75),
+y = sort(qgpd_vec(p,29.7,0.62,0)), 
+xlab = "Actual",
+ylab = "Expected",
+main = "Generalised Pareto Distribution Quantile Quantile plot for exceedances over 75")
+
 
 ```
 
