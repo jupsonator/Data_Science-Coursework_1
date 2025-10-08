@@ -295,20 +295,20 @@ By using a box and whisker plot which considers each month, we can see how seaso
 over75 <- riverflow$flow[riverflow$flow > 75]
 p <- rank(over75-0.5)/length(over75)
 
-length(p)
-length(over75)
 # Quantile Quantile Plot comparing the actual versus expected data:
 plot(
-x = sort(over75),
+x = sort(over75)-75,
 y = sort(qgpd_vec(p,29.7,0.62,0)), 
 xlab = "Actual",
 ylab = "Expected",
 main = "Generalised Pareto Distribution Quantile Quantile plot for exceedances over 75")
-
+abline(0, 1, col = "red")
 
 ```
 
-Determining whether for river flows exceeding 75 cumecs, if it is appropriate to model the data as independent identically distributed GPD($\sigma = 29.7, \xi = 0.62, u=0$):
+To determine whether it is appropriate to model large data flows with the stated GPD, I constructed a quantile quantile plot contrasting the actual dataset, and the expected data. In this, the expected data was calculated using the inverse cumulative distribution.
+
+From the graph, we can see that it is not appropriate to model large data flows with the GPD provided in the question. This is because we see a significant deviation of the plotted points from the $y=x$ line - the expected values don't align with the actual values when dealing with the largest river flows.
 
 ---
 
