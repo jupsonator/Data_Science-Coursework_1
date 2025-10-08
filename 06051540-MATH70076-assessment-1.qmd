@@ -17,28 +17,26 @@ bibliography: ref.bib
 
 **For $\xi \neq 0$:** 
 
-We know from the cumulative distribution function that:
+Assuming $\sigma > 0,$ and $\xi$ in the real numbers. We know from the cumulative distribution function that:
 \begin{equation}
   F(x;\sigma,\xi,u) = 1-\left(1+\frac{\xi(x-u)}{\sigma}\right)_+^{-1/\xi}
 \end{equation}
-Rewriting to make $x$ the subject:
+For now, we can also drop the max function part (as it pertains to the range) and we can consider that separately later.
+Setting $p = F(x;\sigma,\xi,u) \in [0,1]$, and rewriting to make $x$ the subject:
 \begin{align}
-\left(1+\frac{\xi(x-u)}{\sigma}\right)_+^{-1/\xi}&=(1-F) \\
-1&=(1-F)\left(1+\frac{\xi(x-u)}{\sigma}\right)_+^{1/\xi} \\
-(1-F)^{-1}&=\left(1+\frac{\xi(x-u)}{\sigma}\right)_+^{1/\xi} \\
+\left(1+\frac{\xi(x-u)}{\sigma}\right)^{-1/\xi}&=(1-p) \\
+1&=(1-p)\left(1+\frac{\xi(x-u)}{\sigma}\right)^{1/\xi} \\
+(1-p)^{-1}&=\left(1+\frac{\xi(x-u)}{\sigma}\right)^{1/\xi} \\
 \end{align}
-For $\xi > 0$, we see that $\left(1+\frac{\xi(x-u)}{\sigma}\right)^{1/\xi}>0$, so we get:
-\begin{align}
-(1-F)^{-\xi}&=1+\frac{\xi(x-u)}{\sigma} \\
-(1-F)^{-\xi}-1&=\frac{\xi(x-u)}{\sigma} \\
-\left(\left(1-F\right)^{-\xi}-1\right)\times \frac{\sigma}{\xi} &= x-u\\
-u+\left(\left(1-F\right)^{-\xi}-1\right)\times \frac{\sigma}{\xi} &= x\\
+
+For $\xi > 0$, we see that $\left(1+\frac{\xi(x-u)}{\sigma}\right)^{1/\xi}>0$, so we get $u \leq x$ with slowly decaying tails and:
+\begin{align} 
+(1-p)^{-\xi}&=1+\frac{\xi(x-u)}{\sigma} \\
+(1-p)^{-\xi}-1&=\frac{\xi(x-u)}{\sigma} \\
+\left(\left(1-p\right)^{-\xi}-1\right)\times \frac{\sigma}{\xi} &= x-u\\
+u+\left(\left(1-p\right)^{-\xi}-1\right)\times \frac{\sigma}{\xi} &= x\\
 \end{align}
-So $F_X^{-1}=u+\left(\left(1-x\right)^{-\xi}-1\right)\times \frac{\sigma}{\xi}$
-But given our inputs of $F_X^{-1}(x)$ vary between 0 and 1, we can write that:
-\begin{equation}
-F_X^{-1}(x)=u+\left(\left(x\right)^{-\xi}-1\right)\times \frac{\sigma}{\xi}
-\end{equation}
+So $F_X^{-1}(p;\sigma,\xi,u)=u+\left(\left(1-p\right)^{-\xi}-1\right)\times \frac{\sigma}{\xi}=x$
 
 For $\xi < 0$, we know that we have quickly decaying tails with finite upper endpoint. With $x>u$, this finite endpoint is met when
 \begin{align}
@@ -47,40 +45,65 @@ For $\xi < 0$, we know that we have quickly decaying tails with finite upper end
 x-u&=-\frac{\sigma}{\xi} \\
 x&=u-\frac{\sigma}{\xi} \\
 \end{align}
-So for $x > u-\frac{\sigma}{\xi}$, produced by the inverse function above we discard the values of $x$.
+So, in the event of $\xi < 0$, the range of our function is such that $u \leq x \leq \frac{u- \sigma}{\xi}$, for the function $F_X^{-1}(p;\sigma,\xi,u)=u+\left(\left(1-p\right)^{-\xi}-1\right)\times \frac{\sigma}{\xi}=x$
+
+It is given in the question that for $\xi \rightarrow 0$, the GPD reduces to an exponential distribution, hence continuous.
 
 **For $\xi = 0$:**
 \begin{align}
-F&=1-exp\left(-\frac{x-u}{\sigma}\right) \\
-exp\left(-\frac{x-u}{\sigma}\right)&=1-F \\
--\frac{x-u}{\sigma}&=ln(1-F) \\
--x+u&=\sigma ln(1-F) \\
-u-\sigma ln(1-F) &= x \\
+p&=1-exp\left(-\frac{x-u}{\sigma}\right) \\
+exp\left(-\frac{x-u}{\sigma}\right)&=1-p \\
+-\frac{x-u}{\sigma}&=ln(1-p) \\
+-x+u&=\sigma ln(1-p) \\
+u-\sigma ln(1-p) &= x \\
 \end{align}
-So $F_X^{-1}=u-\sigma ln(1-x)$
+So for $\xi = 0$, we get that $F_X^{-1}(p;\sigma,u)=u-\sigma ln(1-p)=x$ and the range of our function is $u \leq x$
 
-But given our inputs of $F_X^{-1}(x)$ vary between 0 and 1, we can write that:
-\begin{equation}
-F_X^{-1}(x)=u-\sigma ln(x)
-\end{equation}
 
 # Question 2a
 
-Defining the quantile function, and using the basis of the cdf from question 1, we get that:
+Defining the quantile function in the style of qnorm() and qunif(), we need out code which produces the inverse CDF whilst providing similar error messages for inadmissable inputs. From this, we get that:
 ```{r}
 qgpd <- function (p, sigma=1, xi=0, u=0){
-  if (p<0||p>1){
-    return(warning("NaNs produced - p must be between 0 and 1")) 
+  len <- max(length(p), length(sigma), length(xi), length(u))
+  p <- rep_len(p, len)
+  sigma <- rep_len(sigma, len)
+  xi <- rep_len(xi, len)
+  u <- rep_len(u, len)
+  if (!is.numeric(p) || !is.numeric(sigma) || !is.numeric(xi) || !is.numeric(u)){
+    return(warning("Errpr: object not found"))
   }
-  else if (sigma<=0){
-    return(warning("NaNs produced - sigma must be greater than 0")) 
+  else if (any(p<0|p>1, na.rm = TRUE)){
+    return(warning("NaNs produced"))
   }
-  else if (xi != 0){
-    return(u + ((1-p)^(-xi)-1) * sigma / xi)
-  } else {
-    return(u - sigma * log(1-p))
+  else if (any(sigma <= 0, na.rm = TRUE)){
+    return(warning("NaNs produced"))
   }
+  
+  safe_xi <- ifelse(xi==0, 1, xi)
+  
+  value <- ifelse(
+    xi == 0,
+    u - sigma * log1p(-p),
+    u + ((1 - p)^(-xi) - 1) * sigma / safe_xi)
+  maxp <- u - sigma/safe_xi
+  
+  
+  
+  # Ensuring our range is correct
+  value <- ifelse(xi<0 & p==1, maxp, value)
+  value <- ifelse(xi<0 & p<1 & maxp <= value, NaN, value)
+  
+  inadmissable <-
+  (is.na(p))|(is.na(sigma))|(is.na(xi))|(is.na(u))|(!is.numeric(p))|(!is.numeric(sigma))|(!is.numeric(xi))|(!is.numeric(u))| (p < 0)|(p > 1)|(sigma <= 0)
+
+  if (any(inadmissable, na.rm = TRUE)) warning("NaNs produced")
+  value[inadmissable] <- NaN
+  
+  value
+  
 }
+
 ```
 
 By default, the expected inputs for the function are sigma=1, xi=0, u=0. The code also prevents inputs where p values are less than 0, where p values exceed 1, or where sigma is less than or equal to 0.
@@ -122,14 +145,6 @@ class_ranking <- ave(gpd_samples$value, gpd_samples$set_id, FUN = rank)
 n <- gpd_parameters$size[row]
 p <- (class_ranking - 0.5) / n
 
-# To enable vectors as inputs:
-qgpd_vec <- function(p, sigma=1, xi=0, u=0){
-  ifelse(
-    rep_len(xi, length(p)) == 0,
-    u - sigma * log(1 - p), 
-    u + ((1 - p)^(-xi) - 1) * sigma / xi 
-  )
-}
 
 # Formatting (necessary for the legend):
 f   <- factor(gpd_samples$set_id)
@@ -137,7 +152,7 @@ cols <- as.integer(f)
 ptch <- 16
 pt.cex <- 0.6
 
-expected_q <- qgpd_vec(
+expected_q <- qgpd(
   p, 
   gpd_parameters$sigma[row], 
   gpd_parameters$xi[row],
@@ -176,17 +191,18 @@ From the figure above, we see some interesting results -- although most actuals 
 
 # Making six QQ plots (with one per id):
 ids <- levels(f)
-limits <- range(c(gpd_samples$value, expected_q), finite = TRUE)
+
 
 # Setting up the grid for our 6 smaller QQ plots:
 op <- par(mfrow = c(2, 3))
 
 # Building our plots:
 for(id in ids){
-  ii <- gpd_samples$set_id == id
+  filt <- gpd_samples$set_id == id
+  limits <- range(c(gpd_samples$value[filt], expected_q[filt]), finite = TRUE)
   plot(
-    x = gpd_samples$value[ii],
-    y = expected_q[ii],
+    x = gpd_samples$value[filt],
+    y = expected_q[filt],
     xlab = "Actuals",
     ylab = "Expected",
     main = paste("id:", id),
@@ -202,8 +218,32 @@ for(id in ids){
 # Reverting from grids back to normal:
 par(op)
 
+cor_results <- tapply(
+  expected_q,
+  gpd_samples$set_id,
+  function(expected_subset) {
+    filt <- gpd_samples$set_id == names(expected_subset)[1]
+    cor(gpd_samples$value[filt], expected_q[filt])
+  }
+)
+
+# Displaying correlations by id:
+cor_results
+
 ```
-From these smaller figures, we can much more readily see which of the actual distributions align with the expected distributions. We can therefore see that:
+From the above, we see that:
+- Values taken from a are slightly beneath the $y=x$ line for smaller values and significantly beneath it for larger values
+- Values taken from b are consistently on the $y=x$ line
+- Values taken from c are beneath the $y=x$ line
+- Values taken from d are consistently above the $y=x$ line
+- Values taken from e are slightly above the $y=x$ line
+- Values taken from f are on the $y=x$ line for smaller values but are significantly beneath the line for larger values
+
+Given that results which deviate from the $y=x$ line show poor fit between the actual and the expected data, it is reasonable that 
+
+
+
+
 
 
 
@@ -298,7 +338,7 @@ p <- rank(over75-0.5)/length(over75)
 # Quantile Quantile Plot comparing the actual versus expected data:
 plot(
 x = sort(over75)-75,
-y = sort(qgpd_vec(p,29.7,0.62,0)), 
+y = sort(qgpd(p,29.7,0.62,0)), 
 xlab = "Actual",
 ylab = "Expected",
 main = "Generalised Pareto Distribution Quantile Quantile plot for exceedances over 75")
@@ -309,6 +349,16 @@ abline(0, 1, col = "red")
 To determine whether it is appropriate to model large data flows with the stated GPD, I constructed a quantile quantile plot contrasting the actual dataset, and the expected data. In this, the expected data was calculated using the inverse cumulative distribution.
 
 From the graph, we can see that it is not appropriate to model large data flows with the GPD provided in the question. This is because we see a significant deviation of the plotted points from the $y=x$ line - the expected values don't align with the actual values when dealing with the largest river flows.
+
+
+# Code appendix
+
+```{r ref.label=knitr::all_labels(), echo = T, eval = F}
+```
+
+# References
+
+
 
 ---
 
