@@ -71,7 +71,6 @@ qgpd <- function (p, sigma=1, xi=0, u=0){
   xi <- rep_len(xi, len)
   u <- rep_len(u, len)
   
-  
   safe_xi <- ifelse(xi==0, 1, xi)
   
   value <- ifelse(
@@ -80,12 +79,11 @@ qgpd <- function (p, sigma=1, xi=0, u=0){
     u + ((1 - p)^(-xi) - 1) * sigma / safe_xi)
   maxp <- u - sigma/safe_xi
   
-  
-  
   # Ensuring our range is correct
   value <- ifelse(xi<0 & p==1, maxp, value)
   value <- ifelse(xi<0 & p<1 & maxp <= value, NaN, value)
   
+  # Handling forbidden inputs
   inadmissable <-
   (is.na(p))|(is.na(sigma))|(is.na(xi))|(is.na(u))|
   (!is.numeric(p))|(!is.numeric(sigma))|(!is.numeric(xi))|(!is.numeric(u))|
@@ -234,33 +232,16 @@ for(id in ids){
 # Reverting from grids back to normal:
 par(op)
 
-
-
-
-
-
-
-
-
-
-
+```
+In addition, below is the calculated Pearson  correlation coefficient for each of the set ids. 
+```{r}
+#| echo: false
 
 cor_results <- tapply(
   seq_along(expected_q),                 
   gpd_samples$set_id,
-  function(ii) {
-    cor(gpd_samples$value[ii], expected_q[ii])   
-  }
-)
-cor_results
-
-
-cor_results <- tapply(
-  seq_along(expected_q),
-  gpd_samples$set_id,
-  function(expected_subset) {
-    filt <- gpd_samples$set_id == names(expected_subset)[1]
-    cor(gpd_samples$value[filt], expected_q[filt])
+  function(filt) {
+    cor(gpd_samples$value[filt], expected_q[filt])   
   }
 )
 
@@ -278,10 +259,6 @@ This analysis split by id shows provides a clearer insight into whether the obse
 - Values taken from f are on the $y=x$ line for smaller values but are significantly beneath the line for larger values. This, however, must be caveated by the fact that of the 98 samples in the dataset, only 4 noticably deviate from the $y=x$ line, a result which can be explained by outliers and large sigma. **CHECK THIS**  
 
 Given that results which deviate from the $y=x$ line show poor fit between the actual and the expected data, it is reasonable that 
-
-
-
-
 
 
 
@@ -316,14 +293,16 @@ lines(
 x = riverflow$date,
 y = riverflow$baseline_mean,
 col = "red",
-lty = c(1, 2),
-lwd = c(1, 2))
+lty = 2,
+lwd = 2)
 
 # Legend:
 legend(
 "topright",
 legend = c("Flow", "Baseline mean"),
 col = c("blue", "red"), 
+lty = c(1, 2),
+lwd = c(1, 2),
 bty = "o")
 
 
@@ -357,10 +336,61 @@ ylab = "River Flow (cumecs)",
 xlab = "Month",
 main = "Monthly distribution of flow",
 notch = TRUE,
-outline = FALSE)
+outline = TRUE)
 abline(h = mean(riverflow$flow), col = "red", lwd = 2, lty = 2)
 legend("topright", legend = "Overall mean", col = "red", lwd = 2, lty = 2, bty = "n")
 ```
+
+Although our boxplot removes outliers (notably results 1.5 times or more away from the edge of the first or third quantiles), it is demonstrably useful in explaining how the interquartile range varies depending on the time of the year.
+
+Similarly, from the rolling window of means plotted below, we can see that the riverflow over the course of years both has noise and that it trends upwards.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{R}
+#| echo: false
+
+window <- 30
+row_number <- nrow(riverflow)
+rolling_mean <- rep(NA, row_number)
+
+for(i in seq_len(row_number)){
+  rolling_mean[i] <- mean(riverflow$flow[max(1,i-floor(window/2)):min(row_number,i+floor(window/2))],na.rm=TRUE)
+}
+
+# Plotting the rolling mean
+plot(
+  x=riverflow$date,
+  y=rolling_mean,
+  type="l",
+  col="blue",
+  xlab="Year",
+  ylab="River Flow (cumecs)",
+  main="30-day river flow rolling mean")
+
+# Add overall mean as a dashed red line
+abline(h = mean(riverflow$flow, na.rm = TRUE), col = "red", lty = 2, lwd = 2)
+
+# Add legend
+legend("topright", legend = c("Rolling mean", "Overall mean"),
+       col = c("blue", "red"), lty = c(1, 2), lwd = 2, bty = "n")
+```
+
+
+
+
 
 By using a box and whisker plot which considers each month, we can see how seasonal changes cause profound effects in the speed of the river's flow. The month of May, for example has an interquartile range in river flow speeds that exceed the entire interquartile range in river flow speeds from the month of March.
 
@@ -371,7 +401,7 @@ By using a box and whisker plot which considers each month, we can see how seaso
 
 # Set up, so that we can use the formula from question 2:
 over75 <- riverflow$flow[riverflow$flow > 75]
-p <- rank(over75-0.5)/length(over75)
+p <- (rank(over75)-0.5)/length(over75)
 
 # Quantile Quantile Plot comparing the actual versus expected data:
 plot(
