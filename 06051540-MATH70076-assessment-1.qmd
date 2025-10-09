@@ -170,13 +170,13 @@ legend(
   "bottomright",
   title = "id",
   legend = levels(f),
-  col = 1:6,
+  col = seq_along(levels(f)),
   pch = ptch,
   cex = pt.cex,
   bty = "o")
 
 ```
-From the figure above, we see some interesting results -- although most actuals seem in line with the expecteds (being close to the figures red line), this is not always the case. Ultimately, however, the different ids need to be separated so as to provide a more granular analysis of the distributions:
+From the figure above, we see some interesting results -- although most actuals seem in line with the expecteds (being close to the figures red line), this is not always the case. Ultimately, however, the different ids need to be separated so as to provide a more granular analysis of the distributions. In the below, the red line indicates the points for which $y=x$, whereas the blue dashed line indicates where the line of best fit through the various points:
 
 ```{r}
 #| echo: false
@@ -251,16 +251,12 @@ cor_results
 ```
 This analysis split by id shows provides a clearer insight into whether the observed data aligns with that expected from the stated distributions:
 
-- Values taken from a are slightly beneath the $y=x$ line for smaller values and significantly beneath it for larger values
-- Values taken from b are consistently on the $y=x$ line
-- Values taken from c are beneath the $y=x$ line
-- Values taken from d are consistently above the $y=x$ line
-- Values taken from e are slightly above the $y=x$ line
-- Values taken from f are on the $y=x$ line for smaller values but are significantly beneath the line for larger values. This, however, must be caveated by the fact that of the 98 samples in the dataset, only 4 noticably deviate from the $y=x$ line, a result which can be explained by outliers and large sigma. **CHECK THIS**  
-
-Given that results which deviate from the $y=x$ line show poor fit between the actual and the expected data, it is reasonable that 
-
-
+- Values taken from a are slightly beneath the $y=x$ line for smaller values and significantly beneath it for larger values - this suggests questionable alignment between the dataset and the stated distribution.
+- Values taken from b are consistently on the $y=x$ line suggesting strong alignment between the dataset and the distribution.
+- Values taken from c are beneath the $y=x$ line for larger values, it is also notable that c has only 20 samples within its dataset so outliers would contribute more to any fitted line.
+- Values taken from d are consistently above the $y=x$ line across the entirety of the displayed points. This suggests with high likelihood that the dataset for the id is inconsistent with the stated distribution. 
+- Values taken from e are consistently above the $y=x$ line despite this dataset being the largest of those observed. This suggests that the dataset for this id has questionable alignment with the stated distribution.
+- Values taken from f are on the $y=x$ line for smaller values, but are significantly beneath the line for larger values. This, however, must be caveated by the fact that of the 98 samples in the dataset, only 4 noticably deviate from the $y=x$ line, a result which can be explained by outliers.
 
 
 
@@ -320,12 +316,15 @@ abline(h = 0, lty = 3)
 
 ```
 
-Determining whether the distribution of river flows is constant over time, we can see from the above that an assumption of constant flow is flawed. This is because we see that the speed of the river's flow varies tremendously - at numerous (albeit brief) intervals over the ten year period, the speed of the river is many multiples of the mean river speed. This is something we can demonstrably see when comparing the mean red dashed line with the time series plot above.
+Determining whether the distribution of river flows is constant over time, we can see from the above graphs that an assumption of constant flow is flawed. This is because we see that the speed of the river's flow varies tremendously - at numerous (albeit brief) intervals over the ten year period, the speed of the river is many multiples of the mean river speed. This is something we can demonstrably see when comparing the mean red dashed line with the time series plot above.
+
+
+
+In addition, although our boxplot below removes outliers (notably results 1.5 times or more away from the edge of the first or third quantiles), it is demonstrably useful in explaining how the interquartile range varies depending on the time of the year.
 
 
 ```{r echo=FALSE}
 
-# Adding another column:
 riverflow$month <- factor(format(riverflow$date, "%b"), levels = month.abb)
 
 # Box and Whisker plot:
@@ -336,27 +335,14 @@ ylab = "River Flow (cumecs)",
 xlab = "Month",
 main = "Monthly distribution of flow",
 notch = TRUE,
-outline = TRUE)
+outline = FALSE)
 abline(h = mean(riverflow$flow), col = "red", lwd = 2, lty = 2)
-legend("topright", legend = "Overall mean", col = "red", lwd = 2, lty = 2, bty = "n")
+legend("topleft", legend = "Mean", col = "red", lwd = 2, lty = 2, bty = "n")
 ```
 
-Although our boxplot removes outliers (notably results 1.5 times or more away from the edge of the first or third quantiles), it is demonstrably useful in explaining how the interquartile range varies depending on the time of the year.
+From the above, we can see the seasonality of the interquartile range -- to provide one example, the entire interquartile range of March's riverflow is less than that experienced in May.
 
-Similarly, from the rolling window of means plotted below, we can see that the riverflow over the course of years both has noise and that it trends upwards.
-
-
-
-
-
-
-
-
-
-
-
-
-
+Similarly, from the rolling window of means plotted below, we can see that the riverflow over the course of years both has noise and that it slowly trends upwards.
 
 
 ```{R}
@@ -380,20 +366,26 @@ plot(
   ylab="River Flow (cumecs)",
   main="30-day river flow rolling mean")
 
-# Add overall mean as a dashed red line
-abline(h = mean(riverflow$flow, na.rm = TRUE), col = "red", lty = 2, lwd = 2)
+trend <- lm(rolling_mean ~ as.numeric(riverflow$date))
 
-# Add legend
-legend("topright", legend = c("Rolling mean", "Overall mean"),
-       col = c("blue", "red"), lty = c(1, 2), lwd = 2, bty = "n")
+# Overall mean line and fitted trend line
+abline(h = mean(riverflow$flow, na.rm = TRUE), col = "red", lty = 2, lwd = 2)
+lines(riverflow$date, predict(trend), col = "darkgreen", lwd = 2, lty = 3)
+
+# Legend
+legend("topright",
+       legend = c("Rolling mean", "Overall mean", "Linear trend"),
+       col = c("blue", "red", "darkgreen"),
+       lty = c(1, 2, 3),
+       lwd = 2,
+       bty = "n",
+       cex = 0.7,
+       y.intersp = 0.7)
 ```
 
+To determine whether it is appropriate to model large data flows with the stated GPD, I constructed a quantile quantile plot contrasting the actual dataset, and the expected data. In this, the expected data was calculated using the inverse cumulative distribution.
 
-
-
-
-By using a box and whisker plot which considers each month, we can see how seasonal changes cause profound effects in the speed of the river's flow. The month of May, for example has an interquartile range in river flow speeds that exceed the entire interquartile range in river flow speeds from the month of March.
-
+From the graph, we can see that it is not appropriate to model large data flows with the GPD provided in the question. This is because we see a significant deviation of the plotted points from the $y=x$ line -- the expected values don't align with the actual values when dealing with the largest river flows.
 
 
 ```{r}
@@ -414,9 +406,6 @@ abline(0, 1, col = "red")
 
 ```
 
-To determine whether it is appropriate to model large data flows with the stated GPD, I constructed a quantile quantile plot contrasting the actual dataset, and the expected data. In this, the expected data was calculated using the inverse cumulative distribution.
-
-From the graph, we can see that it is not appropriate to model large data flows with the GPD provided in the question. This is because we see a significant deviation of the plotted points from the $y=x$ line - the expected values don't align with the actual values when dealing with the largest river flows.
 
 
 # Code appendix
