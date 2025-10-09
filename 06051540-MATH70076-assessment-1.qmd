@@ -70,15 +70,7 @@ qgpd <- function (p, sigma=1, xi=0, u=0){
   sigma <- rep_len(sigma, len)
   xi <- rep_len(xi, len)
   u <- rep_len(u, len)
-  if (!is.numeric(p) || !is.numeric(sigma) || !is.numeric(xi) || !is.numeric(u)){
-    return(warning("Errpr: object not found"))
-  }
-  else if (any(p<0|p>1, na.rm = TRUE)){
-    return(warning("NaNs produced"))
-  }
-  else if (any(sigma <= 0, na.rm = TRUE)){
-    return(warning("NaNs produced"))
-  }
+  
   
   safe_xi <- ifelse(xi==0, 1, xi)
   
@@ -95,7 +87,9 @@ qgpd <- function (p, sigma=1, xi=0, u=0){
   value <- ifelse(xi<0 & p<1 & maxp <= value, NaN, value)
   
   inadmissable <-
-  (is.na(p))|(is.na(sigma))|(is.na(xi))|(is.na(u))|(!is.numeric(p))|(!is.numeric(sigma))|(!is.numeric(xi))|(!is.numeric(u))| (p < 0)|(p > 1)|(sigma <= 0)
+  (is.na(p))|(is.na(sigma))|(is.na(xi))|(is.na(u))|
+  (!is.numeric(p))|(!is.numeric(sigma))|(!is.numeric(xi))|(!is.numeric(u))|
+  (p < 0)|(p > 1)|(sigma <= 0)
 
   if (any(inadmissable, na.rm = TRUE)) warning("NaNs produced")
   value[inadmissable] <- NaN
@@ -112,6 +106,7 @@ The expected output is a real number greater than u that is unbounded if xi is g
 
 Regarding the behaviours of the quantile function:
 The larger the value of xi, the slower the tail decays. In this for xi $>=$ 0 the functions output approaches infinity as p -> 1.
+
 For xi < 0, the functions output has a maximum at u - sigma/xi (when p -> 1).
 For larger values of sigma, the slower the tail decays.
 
@@ -144,7 +139,6 @@ class_ranking <- ave(gpd_samples$value, gpd_samples$set_id, FUN = rank)
 # Using our samples to generate our p-values:
 n <- gpd_parameters$size[row]
 p <- (class_ranking - 0.5) / n
-
 
 # Formatting (necessary for the legend):
 f   <- factor(gpd_samples$set_id)
@@ -192,14 +186,19 @@ From the figure above, we see some interesting results -- although most actuals 
 # Making six QQ plots (with one per id):
 ids <- levels(f)
 
-
 # Setting up the grid for our 6 smaller QQ plots:
 op <- par(mfrow = c(2, 3))
 
 # Building our plots:
 for(id in ids){
+  
+  # Separating our various ids
   filt <- gpd_samples$set_id == id
+
+  # Ensuring our plots don't appear too small when plotted
   limits <- range(c(gpd_samples$value[filt], expected_q[filt]), finite = TRUE)
+  
+  # Plotting the graph
   plot(
     x = gpd_samples$value[filt],
     y = expected_q[filt],
@@ -212,14 +211,52 @@ for(id in ids){
     ylim = limits,
     asp  = 1
   )
+  
+  # Fitting a y=x line
   abline(0, 1, col = "red")
-}
+  
+  # Adding a line of best fit through our plotted samples
+  bestfit <- lm(expected_q[filt] ~ gpd_samples$value[filt])
+  abline(bestfit, col = "blue", lty = 2)
+
+  # Annotating our figure
+  mtext(
+    sprintf(
+      "slope=%.2f,
+      R^2=%.2f",
+      coef(bestfit)[2],
+      summary(bestfit)$r.squared),
+      side = 3,
+      adj = 1,
+      cex = 0.6)
+  }
 
 # Reverting from grids back to normal:
 par(op)
 
+
+
+
+
+
+
+
+
+
+
+
 cor_results <- tapply(
-  expected_q,
+  seq_along(expected_q),                 
+  gpd_samples$set_id,
+  function(ii) {
+    cor(gpd_samples$value[ii], expected_q[ii])   
+  }
+)
+cor_results
+
+
+cor_results <- tapply(
+  seq_along(expected_q),
   gpd_samples$set_id,
   function(expected_subset) {
     filt <- gpd_samples$set_id == names(expected_subset)[1]
@@ -231,13 +268,14 @@ cor_results <- tapply(
 cor_results
 
 ```
-From the above, we see that:
+This analysis split by id shows provides a clearer insight into whether the observed data aligns with that expected from the stated distributions:
+
 - Values taken from a are slightly beneath the $y=x$ line for smaller values and significantly beneath it for larger values
 - Values taken from b are consistently on the $y=x$ line
 - Values taken from c are beneath the $y=x$ line
 - Values taken from d are consistently above the $y=x$ line
 - Values taken from e are slightly above the $y=x$ line
-- Values taken from f are on the $y=x$ line for smaller values but are significantly beneath the line for larger values
+- Values taken from f are on the $y=x$ line for smaller values but are significantly beneath the line for larger values. This, however, must be caveated by the fact that of the 98 samples in the dataset, only 4 noticably deviate from the $y=x$ line, a result which can be explained by outliers and large sigma. **CHECK THIS**  
 
 Given that results which deviate from the $y=x$ line show poor fit between the actual and the expected data, it is reasonable that 
 
@@ -341,7 +379,7 @@ x = sort(over75)-75,
 y = sort(qgpd(p,29.7,0.62,0)), 
 xlab = "Actual",
 ylab = "Expected",
-main = "Generalised Pareto Distribution Quantile Quantile plot for exceedances over 75")
+main = "Quantile Quantile plot for exceedances over 75")
 abline(0, 1, col = "red")
 
 ```
